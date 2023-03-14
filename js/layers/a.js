@@ -33,13 +33,16 @@ addLayer("a", {
         if (hasAchievement("goals", 31)) base = base.sub(.1);
         if (hasAchievement("goals", 41)) base = base.sub(.05);
         if (hasAchievement("goals", 52)) base = base.sub(.05);
+        if (hasAchievement("goals", 106)) base = base.sub(.05);
+        if (hasAchievement("goals", 95)) base = base.sub(.1);
+        if(inChallenge('d',11))base=new Decimal(1e100);
         return base;
     },
     canBuyMax() { return hasAchievement("goals", 21) },
     resetsNothing() { return hasAchievement("goals", 26) },
     autoPrestige() { return player.a.auto && hasMilestone("a", 0) },
     tooltipLocked() { return "" },
-    canReset() { return tmp[this.layer].getResetGain.gte(1) },
+    canReset() { return tmp[this.layer].getResetGain.gte(1)&&!inChallenge('d',11) },
     getResetGain() { 
         let gain = tmp[this.layer].baseAmount.times(tmp[this.layer].reqDiv).sub(tmp[this.layer].requires).plus(1).max(1).log(tmp[this.layer].base).times(tmp[this.layer].gainMult).plus(1).floor().sub(player[this.layer].points).max(0)
         if (!tmp[this.layer].canBuyMax) gain = gain.min(1);
@@ -74,6 +77,7 @@ addLayer("a", {
         if (hasAchievement("goals", 23)) f += " × (b ÷ 4 + 1)"
         if (hasAchievement("goals", 45) && tmp.b.batteriesUnl) f += " × B<sub>202</sub>";
         if (hasAchievement("goals", 33)) f += " × Goals"
+if (hasAchievement("goals", 93))f='('+f+')<sup>Goals'+(hasAchievement('goals',103)?' × 2':'')+'</sup>'
         if (hasAchievement("goals", 13) && !hasAchievement("goals", 33)) f += " + 0.5";
         return f;
     }, 
@@ -90,14 +94,16 @@ addLayer("a", {
         if (hasAchievement("goals", 23)) val = val.times(player.b.value.div(4).plus(1));
         if (hasAchievement("goals", 45) && tmp.b.batteriesUnl) val = val.times(gridEffect("b", 202));
         if (hasAchievement("goals", 33)) val = val.times(tmp.goals.achsCompleted);
+if(hasAchievement("goals", 93))val=val.pow(tmp.goals.achsCompleted);
+if(hasAchievement("goals", 103))val=val.pow(tmp.goals.achsCompleted);
         if (hasAchievement("goals", 13) && !hasAchievement("goals", 33)) val = val.plus(.5);
         return val;
     },
     update(diff) {
         player[this.layer].value = tmp[this.layer].calculateValue
         if (tmp[this.layer].bars.Avolve.unlocked) {
-            if (tmp[this.layer].bars.Avolve.progress>=1) {
-                if (hasAchievement("goals", 82)) player[this.layer].avolve = player[this.layer].avolve.max(tmp[this.layer].bars.Avolve.target)
+            if (layers[this.layer].bars.Avolve.progress().gte(1)) {
+                if (hasAchievement("goals", 82)) player[this.layer].avolve = player[this.layer].avolve.max(layers[this.layer].bars.Avolve.target())
                 else player[this.layer].avolve = player[this.layer].avolve.plus(1);
             }
             if (hasAchievement("goals", 73) && player.a.autoAvolve) layers[this.layer].buyables[11].buyMax()
@@ -144,6 +150,7 @@ addLayer("a", {
                     let data = tmp.a.bars.Avolve.scalings[i]
                     if (x.gte(data.start)) x = x.pow(data.pow).div(data.start.pow(data.pow.sub(1)))
                 }
+if(inChallenge('d',11))x=new Decimal('10^^10000000')
                 return Decimal.pow(5, x.plus(1)).times(10).div(tmp[this.layer].bars.Avolve.reqDiv) 
             },
             target() {

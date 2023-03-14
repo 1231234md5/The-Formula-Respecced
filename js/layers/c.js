@@ -23,18 +23,19 @@ addLayer("c", {
     },
     base() {
         let base = new Decimal(1.5e10);
+if(inChallenge('d',11)&&hasAchievement('goals',112))base=base.pow(player.c.points.div(100).add(1).pow(2.8).sub(1).min(.6-1e-5).sub(.6).mul(-1));
+if(inChallenge('d',11)&&hasAchievement('goals',113))base=base.pow(player.b.points.div(600).add(1).pow(1.5).sub(1).min(.6-1e-5).sub(.6).mul(-1));
         return base;
     },
     exponent: new Decimal(2),
     costScalingStart() {
         let start = new Decimal(15)
         if (hasAchievement("goals", 82)) start = start.plus(player.goals.achievements.filter(x => x>80&&x<90).length)
-        return start;
+        return start.div(1+2*inChallenge('d',11));
     },
-    costScalingInc: new Decimal(.1),
+    costScalingInc:()=>new Decimal(.1).mul(inChallenge('d',11)*6+1),
     canBuyMax() { return false },
-    autoPrestige() { return false },
-    resetsNothing() { return false },
+    autoPrestige() { return hasAchievement("goals", 106) },
     tooltipLocked() { return "Req: n(t) ≥ "+formatWhole(tmp[this.layer].requires) },
     canReset() { return tmp[this.layer].getResetGain.gte(1) },
     getResetGain() { 
@@ -73,7 +74,7 @@ addLayer("c", {
         "blank", "blank",
         ["raw-html", function() { 
             return tmp.c.clockUnl?("<div class='digitalTime'>"+tmp.c.displayedTime+"</div><br><br>"
-            +"1 Day = "+(formatWhole(tmp.c.hoursPerDay.floor(), true)+":"+formatWhole(tmp.c.hoursPerDay.sub(tmp.c.hoursPerDay.floor()).times(60).floor(), true))+":00<br>"
+            +"1 Day = "+(formatWhole(tmp.c.hoursPerDay.floor(), true,2)+":"+formatWhole(tmp.c.hoursPerDay.sub(tmp.c.hoursPerDay.floor()).times(60).floor(), true,2))+":"+formatWhole(tmp.c.hoursPerDay.sub(tmp.c.hoursPerDay.floor()).times(60).sub(tmp.c.hoursPerDay.sub(tmp.c.hoursPerDay.floor()).times(60).floor()).times(60).floor(), true,2)+"<br>"
             +"Days Passed: "+format(player.c.loops)+', which multiply Time Speed by '+format(tmp.c.clockMult)+"x "+(hasAchievement("goals", 63)?"":"(decays over time)")
             ):"" 
         }],
@@ -82,6 +83,7 @@ addLayer("c", {
     hoursPerDay() { 
         let l = player.c.loops
         let day = Decimal.pow(1.1, l).times(hasAchievement("goals", 75)?1:l.plus(1).times(10))
+        if (hasAchievement("goals", 96)) day = day.div(new Decimal(5).pow(player.int.points));
         if (hasAchievement("goals", 56)) day = day.div(2);
         if (hasAchievement("goals", 63)) day = day.div(2);
         if (hasAchievement("goals", 66)) day = day.div(2);
@@ -94,6 +96,7 @@ addLayer("c", {
         if (hasAchievement("goals", 66)) d = d.times(2);
         if (hasAchievement("goals", 63)) d = d.times(2);
         if (hasAchievement("goals", 56)) d = d.times(2);
+        if (hasAchievement("goals", 96)) d = d.times(new Decimal(5).pow(player.int.points));
         d = d.max(1).log(1.1)
         return d.plus(1).floor();
     },
@@ -106,7 +109,7 @@ addLayer("c", {
         let h = r.times(tmp.c.hoursPerDay).floor()
         let m = r.times(tmp.c.hoursPerDay.times(60)).sub(h.times(60)).max(0).floor()
         let s = r.times(tmp.c.hoursPerDay.times(3600)).sub(h.times(3600)).sub(m.times(60)).max(0).floor()
-        return formatWhole(h, true)+":"+formatWhole(m, true)+":"+formatWhole(s, true)
+        return formatWhole(h, true,2)+":"+formatWhole(m, true,2)+":"+formatWhole(s, true,2)
     },
     fullClockUpdate() {
         tmp[this.layer].calcLoops = layers[this.layer].calcLoops()
@@ -135,6 +138,7 @@ addLayer("c", {
     },
     calculateValue(C=player[this.layer].points) {
         let val = C;
+if(hasAchievement('goals',92))val=val.add(tmp.c.calcLoops.pow(0.15))
         return val;
     },
     update(diff) {
@@ -155,5 +159,5 @@ addLayer("c", {
             player.c.totalLoops = new Decimal(0)
             player.c.nullPoints = new Decimal(0)
         }
-    }
+    },canBuyMax:()=>hasAchievement('goals',85) &&!inChallenge('d',11),resetsNothing:()=>hasAchievement('goals',85)
 })

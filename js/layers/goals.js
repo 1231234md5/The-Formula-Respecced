@@ -35,7 +35,7 @@ addLayer("goals", {
 		if (p.gte(50)) p = p.div(2).plus(25);
 		if (p.gte(65)) p = p.div(2).plus(32.5);
 		if (p.gte(75)) p = p.times(5625).cbrt();
-		return Decimal.sub(pow.times(5), p.max(10).sub(10).div(20)).max(1);
+		return Decimal.sub(pow.times(5), p.max(10).sub(10).div(20).mul(1-21*hasAchievement("goals", 91))).max(1).pow(hasAchievement("goals", 91)+1).pow(1.005**(hasAchievement("goals", 94)*tmp.goals.achsCompleted));
     },
     achsCompleted() { return player[this.layer].achievements.length },
     unlocks() { return player[this.layer].buyables[11].toNumber() },
@@ -67,6 +67,12 @@ addLayer("goals", {
                 {
                     desc: "Unlock Integration",
                     req: 37,
+                },{
+                    desc: "Unlock D-power",
+                    req: 54,
+                },{
+                    desc: "Unlock Discharger",
+                    req: 61,
                 },
             ],
             retrieveUnlockData() { return tmp[this.layer].buyables[11].unlockData[player[this.layer].buyables[11].toNumber()] },
@@ -373,8 +379,103 @@ addLayer("goals", {
         85: {
             name: "Live Life to the Fullest I Guess?",
             done() { return tmp.c.clockRatio.times(tmp.c.hoursPerDay).gte(1e9) },
-            tooltip: "Get The Clock to display at least 1e9:00:00. Reward: Wait for the next update ;)",
+            tooltip: "Get The Clock to display at least 1e9:00:00. Reward: B-power resets nothing, C-power reset nothing and can be gotten in bulk.",
             unlocked() { return hasAchievement("goals", 81) },
+        },86: {
+            name: "IP goes brrrrrrr",
+            done() { return player.int.value.gte(56.5) },
+            tooltip: "reach 56.5 IP. Reward: intergrations have a stronger effect, requirement base is reduced.",
+            unlocked() { return hasAchievement("goals", 81) },
+        },91: {
+            name: "Out of order III",
+            done() { return getTimeSpeed().gte(9.9e11) },
+            tooltip: "Reach a x990,000,000,000 time speed. Reward: \"Definitely a Bee Joke\" increases at 20x rate instead of decreases, then it is squared.",
+            unlocked() { return hasAchievement("goals", 85) },
+        },92: {
+            name: "I can't play with this f**king formula",
+            done() { return player.value.gte('e1.5e10') },
+            tooltip: ()=>"Make n(t)≥"+format('e1.5e10')+". Reward: add c by (days passed)<sup>0.15</sup><br>Currently: +"+format(tmp.c.calcLoops.pow(0.15))+'.',
+            unlocked() { return hasAchievement("goals", 85) },
+        },93: {
+            name: "This is really gambling",
+            done() { return player.int.value.gte(488888) },
+            tooltip:"Make I≥"+format(488888)+". Reward: raise a to the power of goals.",
+            unlocked() { return hasAchievement("goals", 85) },
+        },94: {
+            name: "the nicest one",
+            done() { return player.value.gte('e34206942069') },
+            tooltip:"Make n(t)≥"+format('e34206942069')+". Reward: gain x1.25 more intergrations, \"Definitely a bee joke\" is ^1.005 for each goal.",
+            unlocked() { return hasAchievement("goals", 81) },
+        },95: {
+            name: "I can't live without batteries",
+            done() { return tmp.c.clockRatio.times(tmp.c.hoursPerDay).gte(1e19)&& tmp.b.usedBatteries==0  },
+            tooltip:"reach 1e19:00:00 without batteries. Reward: A-power base -0.1 and multiply timespeed by c.",
+            unlocked() { return hasAchievement("goals", 94) },
+        },96: {
+            name: "tetrational scaling?",
+            done() { return player.c.loops.gte(684) },
+            tooltip:"gain 684 days. Reward: day length is divided by 5 for each intergration, square the middle column of batteries.",
+            unlocked() { return hasAchievement("goals", 93) },
+        },101: {
+            name: "max safe integer",
+            done() { return player.b.value.gte(Number.MAX_SAFE_INTEGER) },
+            tooltip:"reach "+format(Number.MAX_SAFE_INTEGER)+" b. Reward: d base is ^0.99 for each goal, d boost time speed.",
+            unlocked() { return hasAchievement("goals", 94) },
+        },102: {
+            name: "72 months later......",
+            done() { return player.c.loops.gte(2170) },
+            tooltip:"reach 2,170 days. Reward: base of the prevoius achievement is -0.00008 for each goal.",
+            unlocked() { return hasAchievement("goals", 93) },
+        },103: {
+            name: "2248",
+            done() { return player.c.loops.gte(2248) },
+            tooltip:"reach "+format(2248)+" days. Reward: raise a to the power of goals again, and Avolve boost d.",
+            unlocked() { return hasAchievement("goals", 93) },
+        },104: {
+            name: "pentational growth???",
+            done() { return player.a.points.gte(2.5e30) },
+            tooltip:"reach "+format(2.5e30)+" A-power. Reward: n(t) reduces d base.",
+            unlocked() { return hasAchievement("goals", 93) },
+        },105: {
+            name: "be overloaded with power",
+            done() { return player.b.points.gte(512) },
+            tooltip:"reach 512 B-power. Reward: B-power boost b.",
+            unlocked() { return hasAchievement("goals", 93) },
+        },106: {
+            name: "IP is infinity points",
+            done() { return player.int.points.gte(64)},
+            tooltip:"reach 64 Intergrations. Reward: powers boost IP, Intergration base -2, A-power base is -0.05, & automate B-power , C-power & Intergrations.",
+            unlocked() { return hasAchievement("goals", 94) },
+        },111: {
+            name: "Intergration++",
+            done() { return player.int.points.gte(120)},
+            tooltip:"reach 120 Intergrations.",
+            unlocked() { return hasAchievement("goals", 103) },
+        },112: {
+            name: "beyond infinite",
+            done() { return player.value.gte('e8e5')&&inChallenge('d',11)},
+            tooltip:()=>"make n(t)≥"+format('e8e5')+" in the discharger. Reward: in the discharger, C-power base is ^"+format(player.c.points.div(100).add(1).pow(2.8).sub(1).min(.6-1e-5).sub(.6).mul(-1))+" and n(t) is x1e2,000,000.",
+            unlocked() { return hasAchievement("goals", 111) },
+        },113: {
+            name: "I see how the discharger works",
+            done() { return player.c.points.gte(16)&&inChallenge('d',11)},
+            tooltip:()=>"reach 16 C-power in the discharger. Reward: in the discharger, C-power base is ^"+format(player.b.points.div(600).add(1).pow(1.5).sub(1).min(.6-1e-5).sub(.6).mul(-1))+" and timespeed is ^0.1 instead of doing nothing. Also a boost timespeed.",
+            unlocked() { return hasAchievement("goals", 111) },
+        },114: {
+            name: "too high n(t)",
+            done() { return player.value.gte('e4e55')},
+            tooltip:()=>"make n(t)≥"+format('e4e55')+". Reward: volts gained are ^1.1, & the base of the buyable that increase volt gain is +2.",
+            unlocked() { return hasAchievement("goals", 102) },
+        },115: {
+            name: "out of power",
+            done() { return player.d.dcp.gte('123456789'.repeat(32)+'0')},
+            tooltip:()=>"gain "+format('123456789'.repeat(32)+'0')+" volts. Reward: the base of the buyable that increase volt gain is +0.03 for each goal, intergration resets nothing, & volt effect also applies out of the discharger.",
+            unlocked() { return hasAchievement("goals", 113) },
+        },116: {
+            name: "1 big bang at a time",
+            done() { return getTimeSpeed().gte(1e156);},
+            tooltip:()=>"reach a "+format(1e156)+"x time speed. Reward: gain 1.6x more intergrations.",
+            unlocked() { return hasAchievement("goals", 93) },
         },
     },
     nodeStyle: { width: "50px", height: "50px", "min-width": "50px" },

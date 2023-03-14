@@ -28,11 +28,10 @@ addLayer("b", {
         let exp = 1.25
         return new Decimal(exp);
     },
-    costScalingStart: new Decimal(15),
-    costScalingInc() { return new Decimal(hasAchievement("goals", 74)?.04:.05) },
-    canBuyMax() { return hasAchievement("goals", 74) },
-    autoPrestige() { return false },
-    resetsNothing() { return false },
+    costScalingStart: ()=>new Decimal(15).div(1+2*inChallenge('d',11)),
+    costScalingInc() { return new Decimal(hasAchievement("goals", 74)?.04:.05).mul(inChallenge('d',11)*6+1) },
+    canBuyMax() { return hasAchievement("goals", 74) &&!inChallenge('d',11)},
+    autoPrestige() { return  hasAchievement("goals", 106) },
     tooltipLocked() { return "Req: n(t) ≥ "+formatWhole(tmp[this.layer].requires) },
     canReset() { return tmp[this.layer].getResetGain.gte(1) },
     getResetGain() { 
@@ -73,11 +72,13 @@ addLayer("b", {
         "grid",
     ],
     displayFormula() {
-        let brackets = hasAchievement("goals", 83)
+        let brackets = hasAchievement("goals", 83)||hasAchievement("goals", 105)
         let f = (brackets?"(":"")+"B";
         if (hasAchievement("goals", 64)) f += " + c"
         if (hasAchievement("goals", 81)) f += " + IP"
-        if (brackets) f += ") × I"
+        if (brackets) f += ")";
+if(hasAchievement("goals", 105))f+=' × B';
+if(hasAchievement("goals", 83))f+=' × I';
         return f;
     },
     calculateValue(B=player[this.layer].points) {
@@ -85,6 +86,7 @@ addLayer("b", {
         if (hasAchievement("goals", 64)) val = val.plus(player.c.value);
         if (hasAchievement("goals", 81)) val = val.plus(player.int.value);
         if (hasAchievement("goals", 83)) val = val.times(player.int.points.max(1));
+        if (hasAchievement("goals", 105))val=val.mul(B);
         return val;
     },
     update(diff) {
@@ -150,6 +152,8 @@ addLayer("b", {
             let eff = x.plus(1).root(rt).times(mult);
             if (col==1 && hasAchievement("goals", 76)) eff = eff.pow(2);
             if (row==3 && hasAchievement("goals", 84)) eff = eff.times(2);
+            if (col==2 && hasAchievement("goals", 96)) eff = eff.pow(2);
+if(inChallenge('d',11))eff=new Decimal(1);
             return eff;
         },
         getCanClick(data, id) { return (layers[this.layer].usedBatteries()<tmp[this.layer].batteryLimit)||data.gt(0) },
@@ -171,5 +175,5 @@ addLayer("b", {
     doReset(resettingLayer) {
         let keep = ["grid"]
         if (layers[resettingLayer].row > tmp[this.layer].row) layerDataReset(this.layer, keep)
-    }
+    },resetsNothing:()=>hasAchievement('goals',85)
 })

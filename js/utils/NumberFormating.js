@@ -6,7 +6,7 @@ function exponentialFormat(num, precision, mantissa = true) {
         m = decimalOne
         e = e.add(1)
     }
-    e = (e.gte(1e9) ? format(e, 3) : (e.gte(10000) ? commaFormat(e, 0) : e.toStringWithDecimalPlaces(0)))
+    e = (e.gte(1e12) ? format(e, 5) : (e.gte(1000) ? commaFormat(e, 0) : e.toStringWithDecimalPlaces(0)))
     if (mantissa)
         return m.toStringWithDecimalPlaces(precision) + "e" + e
     else return "e" + e
@@ -40,7 +40,7 @@ function sumValues(x) {
     return x.reduce((a, b) => Decimal.add(a, b))
 }
 
-function format(decimal, precision = 2, small) {
+function format(decimal, precision = 4, small) {
     small = small || modInfo.allowSmall
     decimal = new Decimal(decimal)
     if (isNaN(decimal.sign) || isNaN(decimal.layer) || isNaN(decimal.mag)) {
@@ -52,11 +52,11 @@ function format(decimal, precision = 2, small) {
     if (decimal.gte("eeee1000")) {
         var slog = decimal.slog()
         if (slog.gte(1e6)) return "F" + format(slog.floor())
-        else return Decimal.pow(10, slog.sub(slog.floor())).toStringWithDecimalPlaces(3) + "F" + commaFormat(slog.floor(), 0)
+        else return Decimal.pow(10, slog.sub(slog.floor())).toStringWithDecimalPlaces(4) + "F" + commaFormat(slog.floor(), 0)
     }
-    else if (decimal.gte("1e1000000")) return exponentialFormat(decimal, 0, false)
-    else if (decimal.gte("1e10000")) return exponentialFormat(decimal, 0)
-    else if (decimal.gte(1e9)) return exponentialFormat(decimal, precision)
+    else if (decimal.gte("ee9")) return exponentialFormat(decimal, 0, false)
+    else if (decimal.gte("ee6")) return exponentialFormat(decimal, 0)
+    else if (decimal.gte(1e12)) return exponentialFormat(decimal, precision)
     else if (decimal.gte(1e3)) return commaFormat(decimal, 0)
     else if (decimal.gte(0.0001) || !small) return regularFormat(decimal, precision)
     else if (decimal.eq(0)) return (0).toFixed(precision)
@@ -72,12 +72,12 @@ function format(decimal, precision = 2, small) {
 
 }
 
-function formatWhole(decimal, ez=false) {
+function formatWhole(decimal, ez=false,epr=4) {
     decimal = new Decimal(decimal)
-    if (decimal.gte(1e9)) return format(decimal, 2)
-    if (decimal.lte(0.99) && !decimal.eq(0)) return format(decimal, 2)
+    if (decimal.gte(1e9)) return format(decimal, 4)
+    if (decimal.lte(0.99) && !decimal.eq(0)) return format(decimal, 4)
     let f = format(decimal, 0)
-    return ((ez&&f.length<2)?("0".repeat(2-f.length)):"")+f
+    return ((ez&&f.length<epr)?("0".repeat(epr-f.length)):"")+f
 }
 
 function formatTime(s) {
@@ -98,7 +98,7 @@ function toPlaces(x, precision, maxAccepted) {
 }
 
 // Will also display very small numbers
-function formatSmall(x, precision=2) { 
+function formatSmall(x, precision=4) { 
     return format(x, precision, true)    
 }
 
