@@ -4,7 +4,7 @@ addLayer("d", {
     position: 3,
     startData() { return {
         unlocked: false,
-		points: new Decimal(0),dcp:new Decimal(0)
+		points: new Decimal(0),dcp:new Decimal(0),modifiers:[false,false]
     }},
     nodeStyle: { "min-width": "60px", height: "60px", "font-size": "30px", "padding-left": "15px", "padding-right": "15px" },
     color: "#a4b309",
@@ -66,10 +66,10 @@ if(hasAchievement('goals',104))base=base.root(new Decimal(2).pow(player.value.ad
         "blank",
         ["display-text", function() { return "<h3>d("+formatWhole(player[this.layer].points)+") = "+format(player[this.layer].value)+"</h3>" }],
         ["display-text", function() { return "d(D) = "+tmp[this.layer].displayFormula }],
-        "blank", "blank",['challenge',11],['raw-html',()=>(tmp.goals.unlocks<8?'':`You have <h2 style="color:rgb(200,200,0);text-shadow: rgb(200,200,0) 0px 0px 10px;">${formatWhole(player.d.dcp)}</h2> volts<br>they're gained in the discharger, based on n(t), time speed, & B-power<br>they're providing a ×${format(softcap(player.d.dcp.add(1).pow(0.1),new Decimal(1000),0.6))} boost to timespeed while discharged, unaffected by the ^0.1 ${player.d.dcp.add(1).pow(0.1).gte(1000)?'<b style="color:rgb(135,135,46);">(softcapped)</b>':''}`)],'buyables'
+        "blank", "blank",['challenge',11],['raw-html',()=>(tmp.goals.unlocks<8?'':`You have <h2 style="color:rgb(200,200,0);text-shadow: rgb(200,200,0) 0px 0px 10px;">${formatWhole(player.d.dcp)}</h2> volts<br>they're gained in the discharger, based on n(t), time speed, & B-power<br>they're providing a ×${format(softcap(player.d.dcp.add(1).pow(0.1),new Decimal(1000),0.6))} boost to timespeed while discharged, unaffected by the ^0.1 ${player.d.dcp.add(1).pow(0.1).gte(1000)?'<b style="color:rgb(135,135,46);">(softcapped)</b>':''}`)],'buyables',()=>hasAchievement('goals',123)?'clickables':''
     ],update(diff){
         player[this.layer].value = tmp[this.layer].calculateValue
-if(inChallenge('d',11))player.d.dcp=player.d.dcp.max(calculateValue(player.points.times(getTimeSpeed())).add(10).log(10).sub(5e6).max(0).div(2.5).add(getTimeSpeed().pow(2.2).sub(100**2.2).max(0)).div(1.6e5).add(1).pow(1.5).mul(player.b.points.add(1).pow(1/5.8).sub(1)).pow(8/3).sub(1).mul(tmp.d.buyables[11].effect).pow(hasAchievement("goals", 114)/10+1))
+if(inChallenge('d',11))player.d.dcp=player.d.dcp.max(softcap(softcap(calculateValue(player.points.times(getTimeSpeed())).add(10).log(10).sub(5e6).max(0).div(2.5).add(getTimeSpeed().pow(2.2).sub(100**2.2).max(0)).div(1.6e5).add(1).pow(1.5).mul(player.b.points.add(1).pow(1/5.8).sub(1)).pow(8/3).sub(1).mul(tmp.d.buyables[11].effect).mul(hasAchievement("goals", 126)?tmp.int.cVOODC.add(1).pow(21):1).pow(hasAchievement("goals", 114)/10+1).pow(hasAchievement("goals", 121)/7+1).pow(hasAchievement("goals", 125)*.3+1),new Decimal('e2000'),0.75),new Decimal('e5e4'),.4))
         },
     displayFormula() {
         let f = "D";
@@ -97,18 +97,19 @@ if(inChallenge('d',11))val=new Decimal(1);
                 let exp = new Decimal(3);
                 if (hasAchievement("goals", 114)) exp = exp.mul(5/3);
 if(hasAchievement("goals", 115))exp=exp.add(tmp.goals.achsCompleted*.03);
+if(hasAchievement('goals',121))exp=exp.pow(1.25);
                 return exp;
             },
             effect() { 
                 let eff =tmp[this.layer].buyables[this.id].effBase.pow(player[this.layer].buyables[this.id]);
-                return softcap(eff,new Decimal(1e50),0.42069);
+                return softcap(softcap(eff,new Decimal(1e50),0.42069),new Decimal('e2222.22222222222222222'),0.25);
             },
             cost(x=player[this.layer].buyables[this.id]) { return Decimal.pow(10, x.mul(1.5**.5)).times(1e9).ceil() },
             target(r=player[this.layer].dcp) { return r.div(1e9).max(1).log(10).div(1.5**.5).plus(1).floor() },
             display() { return "Level: "+formatWhole(player[this.layer].buyables[this.id])+"<br>Req: "+formatWhole(tmp[this.layer].buyables[this.id].cost)+" volts" },
             canAfford() { return player[this.layer].dcp.gte(layers[this.layer].buyables[this.id].cost()) },
             buy() { 
-                if (hasAchievement("goals", 199)) {
+                if (hasAchievement("goals", 121)) {
                     layers[this.layer].buyables[this.id].buyMax();
                     return;
                 }
@@ -125,5 +126,14 @@ if(hasAchievement("goals", 115))exp=exp.add(tmp.goals.achsCompleted*.03);
         }
         },  
     },canBuyMax:true,challenges:{11:{name:'the discharger',fullDisplay:'B-power and C-power scaling start 3x earlier and is 7x stronger, A-power is a constant 100, time speed, Avolve and batteries does nothing, buying max is disabled, & your intergrations & D-power does nothing (IP & d is fixed at 1).<br>entering will reset A-power, B-power, & C-power.',canComplete:false,unlocked:()=>tmp.goals.unlocks>=8,
-onEnter(){player.a.points=new Decimal(100);player.b.points=player.c.points=player.a.avolve=new Decimal(0)},style:{height:'225px'}}}
+onEnter(){player.a.points=new Decimal(100);player.b.points=player.c.points=player.a.avolve=new Decimal(0)},style:{height:'225px'}}},clickables:{
+11:{
+title:()=>'dialation'+(player.d.modifiers[0]?' (active)':''),display:'n(t) exponent, time speed exponent, a exponent, b, & c ^0.5. Intergrations do not boost b.',
+canClick:()=>!inChallenge('d',11),onClick(){player.d.modifiers[0]=!player.d.modifiers[0]},style:()=>!player.d.modifiers[0]?{'background-color':'#808080'}:'',style:{height:'150px','border-radius':'0px'}
+},12:{
+title:()=>'reality'+(player.d.modifiers[1]?' (active)':''),display:'time speed is always 1, n(t) exponent ^0.8, intergrations does not boost b.',
+canClick:()=>!inChallenge('d',11),onClick(){player.d.modifiers[1]=!player.d.modifiers[1]},style:()=>!player.d.modifiers[1]?{'background-color':'#808080'}:'',style:{height:'150px','border-radius':'0px'}
+}
+}
 })
+addLayer('RESE',{row:10,layerShown:false,type:'normal',resetsNothing:false,getResetGain:()=>new Decimal(0),getNextAt:()=>new Decimal(1/0),canReset:false})

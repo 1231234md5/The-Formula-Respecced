@@ -15,7 +15,7 @@ addLayer("int", {
     baseAmount() { return tmp.timeSpeed||new Decimal(1) },
     type: "static",
     requires: new Decimal(1e7),
-    base: ()=>new Decimal(10-3*hasAchievement('goals',86)-hasAchievement('goals',106)*2),
+    base: ()=>new Decimal(10-3*hasAchievement('goals',86)-hasAchievement('goals',106)*2-hasAchievement("goals", 125)).add(player.int.points.sub(4000).max(0).div(1000).add(1).pow(2).sub(1)).pow(1-hasAchievement("goals", 126)/4),
     exponent: new Decimal(1),
     layerShown() { return tmp.goals.unlocks>=6 },
     tooltipLocked() { return "Req: Time Speed ≥ "+formatWhole(tmp[this.layer].requires)+"x" },
@@ -39,17 +39,21 @@ addLayer("int", {
         player.int.value = tmp.int.calculateValue
     },
     calculateValue(I = player.int.points) {
+        let IV=tmp.int.cVOODC;
+if(inChallenge('d',11))IV=new Decimal(1);
+return IV;
+    },cVOODC(I = player.int.points) {
         let IV=I.times(2).times(player.value.max(10).log10().log10().plus(1));
 if(hasAchievement('goals',86))IV=new Decimal(2).mul(player.value.max(10).log10().log10().plus(1).pow(I.pow(0.6)));
 if(hasAchievement('goals',106))IV=IV.mul(player.a.points.max(1).log(10).mul(player.b.points).mul(player.c.points).mul(player.d.points).add(1).pow(0.7))
-
-if(inChallenge('d',11))IV=new Decimal(1);
+if(hasAchievement('goals',123))IV=IV.mul(player.c.value.add(1).pow(5));
 return IV;
     },
     displayFormula() {
         let f = "2 × I × (log(log(n(t)) + 1)"
         if(hasAchievement('goals',86))f='2 × (log(log(n(t)) + 2)<sup>I<sup>0.6</sup></sup>'
 if(hasAchievement('goals',106))f+=" × (log(A) × B × C × D + 1)<sup>0.7</sup>"
+if(hasAchievement('goals',124))f+=" × (c + 1)<sup>5</sup>"
 if(inChallenge('d',11))f='1';
         return f;
     },directMult:()=>(1+hasAchievement("goals", 94)/4)*(1+0.6*hasAchievement("goals", 116)),

@@ -2198,6 +2198,7 @@
     Decimal.prototype.layeradd10 = function(diff) {
       diff = Decimal.fromValue_noAlloc(diff).toNumber();
       var result = D(this);
+if(diff>=1)result=D(10).pow(result),diff--;
       if (diff >= 1)
       {
         var layeradd = Math.trunc(diff);

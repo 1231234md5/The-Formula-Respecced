@@ -29,7 +29,7 @@ addLayer("b", {
         return new Decimal(exp);
     },
     costScalingStart: ()=>new Decimal(15).div(1+2*inChallenge('d',11)),
-    costScalingInc() { return new Decimal(hasAchievement("goals", 74)?.04:.05).mul(inChallenge('d',11)*6+1) },
+    costScalingInc() { return new Decimal(hasAchievement("goals", 74)?.04:.05).mul(inChallenge('d',11)*6+1).div(1+4*hasAchievement('goals',122)) },
     canBuyMax() { return hasAchievement("goals", 74) &&!inChallenge('d',11)},
     autoPrestige() { return  hasAchievement("goals", 106) },
     tooltipLocked() { return "Req: n(t) ≥ "+formatWhole(tmp[this.layer].requires) },
@@ -78,7 +78,7 @@ addLayer("b", {
         if (hasAchievement("goals", 81)) f += " + IP"
         if (brackets) f += ")";
 if(hasAchievement("goals", 105))f+=' × B';
-if(hasAchievement("goals", 83))f+=' × I';
+if(hasAchievement("goals", 83)&&!((player.d.modifiers[0]||player.d.modifiers[1])&&inChallenge('d',11)))f+=' × I';
         return f;
     },
     calculateValue(B=player[this.layer].points) {
@@ -86,7 +86,8 @@ if(hasAchievement("goals", 83))f+=' × I';
         if (hasAchievement("goals", 64)) val = val.plus(player.c.value);
         if (hasAchievement("goals", 81)) val = val.plus(player.int.value);
         if (hasAchievement("goals", 83)) val = val.times(player.int.points.max(1));
-        if (hasAchievement("goals", 105))val=val.mul(B);
+        if (hasAchievement("goals", 105)&&!((player.d.modifiers[0]||player.d.modifiers[1])&&inChallenge('d',11)))val=val.mul(B);
+if(player.d.modifiers[0]&&inChallenge('d',11))val=val.pow(.5);
         return val;
     },
     update(diff) {

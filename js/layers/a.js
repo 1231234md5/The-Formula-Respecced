@@ -97,6 +97,7 @@ if (hasAchievement("goals", 93))f='('+f+')<sup>Goals'+(hasAchievement('goals',10
 if(hasAchievement("goals", 93))val=val.pow(tmp.goals.achsCompleted);
 if(hasAchievement("goals", 103))val=val.pow(tmp.goals.achsCompleted);
         if (hasAchievement("goals", 13) && !hasAchievement("goals", 33)) val = val.plus(.5);
+if(player.d.modifiers[0]&&inChallenge('d',11))val=val.add(1).log(10).pow(.5).layeradd10(1).sub(1);
         return val;
     },
     update(diff) {
@@ -120,11 +121,13 @@ if(hasAchievement("goals", 103))val=val.pow(tmp.goals.achsCompleted);
                     start() {
                         let start = new Decimal(100)
                         if (hasAchievement("goals", 54)) start = start.plus(25);
+if(hasAchievement("goals", 125)&&inChallenge('d',11))start=new Decimal(10)
                         return start;
                     },
                     pow() { 
                         let pow = new Decimal(2)
                         if (hasAchievement("goals", 81)) pow = pow.sqrt();
+if(hasAchievement("goals", 125)&&inChallenge('d',11))pow=pow.pow(6)
                         return pow;
                     },
                 },
@@ -150,11 +153,11 @@ if(hasAchievement("goals", 103))val=val.pow(tmp.goals.achsCompleted);
                     let data = tmp.a.bars.Avolve.scalings[i]
                     if (x.gte(data.start)) x = x.pow(data.pow).div(data.start.pow(data.pow.sub(1)))
                 }
-if(inChallenge('d',11))x=new Decimal('10^^10000000')
+if(inChallenge('d',11))x=x.add(hasAchievement("goals", 125)?1000:'10^^10000000')
                 return Decimal.pow(5, x.plus(1)).times(10).div(tmp[this.layer].bars.Avolve.reqDiv) 
             },
             target() {
-                let x = player.value.times(tmp[this.layer].bars.Avolve.reqDiv).div(10).max(1).log(5).sub(1);
+                let x = player.value.times(tmp[this.layer].bars.Avolve.reqDiv).div(10).max(1).log(5).sub(1).sub((hasAchievement("goals", 125)?1000:'10^^10000000')).max(0);
                 for (let i=tmp.a.bars.Avolve.scalings.length-1;i>=0;i--) {
                     let data = tmp.a.bars.Avolve.scalings[i]
                     if (x.gte(data.start)) x = x.times(data.start.pow(data.pow.sub(1))).root(data.pow)

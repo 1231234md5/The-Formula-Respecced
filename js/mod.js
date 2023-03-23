@@ -72,6 +72,8 @@ function calculateValue(t) {
 		if (hasAchievement("goals", 45) && tmp.b.batteriesUnl) val = val.times(gridEffect("b", 201));
 		if (hasAchievement("goals", 15)) val = val.times(tmp.goals.achsCompleted);
 if (hasAchievement("goals", 112)&&inChallenge('d',11))val=val.mul('e2e6');
+if(player.d.modifiers[0]&&inChallenge('d',11))val=val.add(1).log(10).pow(.5).layeradd10(1).sub(1);
+if(player.d.modifiers[1]&&inChallenge('d',11))val=val.add(1).log(10).pow(.8).layeradd10(1).sub(1);
 		return val;
 	} else {
 		let extraExp = hasAchievement("goals", 62)?player.a.value.plus(1).log10().plus(1):new Decimal(1)
@@ -82,6 +84,8 @@ if (hasAchievement("goals", 112)&&inChallenge('d',11))val=val.mul('e2e6');
 		if (hasAchievement("goals", 45) && tmp.b.batteriesUnl) val = val.times(gridEffect("b", 201));
 		if (hasAchievement("goals", 15)) val = val.times(tmp.goals.achsCompleted);
 if (hasAchievement("goals", 112)&&inChallenge('d',11))val=val.mul('e2e6');
+if(player.d.modifiers[0]&&inChallenge('d',11))val=val.add(1).log(10).pow(.5).layeradd10(1).sub(1);
+if(player.d.modifiers[1]&&inChallenge('d',11))val=val.add(1).log(10).pow(.8).layeradd10(1).sub(1);
 		return val;
 	}
 }
@@ -131,7 +135,7 @@ function canGenPoints(){
 }
 
 function getTimeSpeed() {
-if(inChallenge('d',11)&&!hasAchievement('goals',113))return new Decimal(1);
+if(inChallenge('d',11)&&(!hasAchievement('goals',113)||player.d.modifiers[1]))return new Decimal(1);
 	let spd = new Decimal(1);
 	if (hasAchievement("goals", 36)) spd = spd.times(tmp.goals.goal36eff);
 	if (hasAchievement("goals", 53) && tmp.b.batteriesUnl) spd = spd.times(gridEffect("b", 302))
@@ -146,6 +150,8 @@ if(inChallenge('d',11)&&!hasAchievement('goals',113))return new Decimal(1);
 	if (hasAchievement("goals", 101)&&player.d.value instanceof Decimal) spd = spd.times(player.d.value.pow(2.5).mul(player.d.points.pow(3)).add(1))
 if (hasAchievement("goals", 113))spd=spd.mul(player.a.value.max(10).log(10).pow(.55))
 if(inChallenge('d',11)||hasAchievement("goals", 115))spd=spd.pow(1-.9*inChallenge('d',11)).mul(softcap(player.d.dcp.add(1).pow(0.1),new Decimal(1000),0.6))
+if(player.d.modifiers[0]&&inChallenge('d',11))spd=spd.add(1).log(10).pow(.5).layeradd10(1).sub(1);
+if(hasAchievement("goals", 131))spd=spd.mul(player.value.add(10).log(10).pow(2.5))
 	return spd;
 }
 
@@ -162,6 +168,7 @@ if (hasAchievement("goals", 101))f+=' × (D<sup>3</sup> × d<sup>2.5</sup> + 1)'
 if (hasAchievement("goals", 113))f+=' × log(a)<sup>0.55</sup>'
 if(inChallenge('d',11))f='('+f+')<sup>0.1</sup>'
 if(inChallenge('d',11)||hasAchievement("goals", 115))f+=' × volt effect'
+if(hasAchievement("goals", 131))f+=' × log(n(t))<sup>2.5</sup>'
 	return f;
 }
 

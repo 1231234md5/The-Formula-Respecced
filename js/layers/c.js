@@ -33,7 +33,7 @@ if(inChallenge('d',11)&&hasAchievement('goals',113))base=base.pow(player.b.point
         if (hasAchievement("goals", 82)) start = start.plus(player.goals.achievements.filter(x => x>80&&x<90).length)
         return start.div(1+2*inChallenge('d',11));
     },
-    costScalingInc:()=>new Decimal(.1).mul(inChallenge('d',11)*6+1),
+    costScalingInc:()=>new Decimal(.1).mul(inChallenge('d',11)*6+1).div(1+4*hasAchievement('goals',122)),
     canBuyMax() { return false },
     autoPrestige() { return hasAchievement("goals", 106) },
     tooltipLocked() { return "Req: n(t) ≥ "+formatWhole(tmp[this.layer].requires) },
@@ -134,11 +134,13 @@ if(inChallenge('d',11)&&hasAchievement('goals',113))base=base.pow(player.b.point
     },
     displayFormula() {
         let f = "C";
+if(hasAchievement('goals',92))f+=' + days<sup>0.15</sup>'
         return f;
     },
     calculateValue(C=player[this.layer].points) {
         let val = C;
 if(hasAchievement('goals',92))val=val.add(tmp.c.calcLoops.pow(0.15))
+if(player.d.modifiers[0]&&inChallenge('d',11))val=val.pow(.5);
         return val;
     },
     update(diff) {

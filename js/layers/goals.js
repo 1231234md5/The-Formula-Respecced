@@ -476,7 +476,42 @@ addLayer("goals", {
             done() { return getTimeSpeed().gte(1e156);},
             tooltip:()=>"reach a "+format(1e156)+"x time speed. Reward: gain 1.6x more intergrations.",
             unlocked() { return hasAchievement("goals", 93) },
-        },
+        },121: {
+            name: "f**king Intergrations",
+            done() { return player.int.points.gte(666);},
+            tooltip:()=>"get 666 intergrations. Reward: volt gain ^"+format(1+1/7)+" & you buy max the volt buyable, its base is raised to the 1.25th power.",
+            unlocked() { return hasAchievement("goals", 93) },
+        },122: {
+            name: "\"superscaled\" volts",
+            done() { return player.d.dcp.gte('e3500');},
+            tooltip:()=>"get "+format('e3500')+" volts. Reward: B-power & C-power scaling is 80% weaker.",
+            unlocked() { return hasAchievement("goals", 93) },
+        },123: {
+            name: "not a luck related goal",
+            done() { return player.value.gte('e77777777777')&&inChallenge('d',11);},
+            tooltip:()=>"make n(t)≥"+format('e77777777777')+" in the discharger. Reward: unlock modifiers for the discharger and c boost IP.",
+            unlocked() { return hasAchievement("goals", 93) },
+        },124: {
+            name: "nice++",
+            done() { return tmp.goals.achsCompleted>=69;},
+            tooltip:()=>"reach 69 goals.",
+            unlocked() { return hasAchievement("goals", 93) },
+        },125: {
+            name: "Out Of Order IV",
+            done() { return player.b.points.gte(40)&&player.c.points.gte(50)&&inChallenge('d',11)&&player.d.modifiers[0]&&player.d.modifiers[1];},
+            tooltip:()=>"reach 40 B-power & 50 C-power in the discharger while both modifiers are active. Reward: volt gain ^1.3, you can avolve in the discharger, & intergration base -1.",
+            unlocked() { return hasAchievement("goals", 123) },
+        },126: {
+            name: "truly power outage",
+            done() { return player.d.dcp.gte('e11111.111111111111111111111')},
+            tooltip:()=>"reach "+format('e11111.111111111111111111111')+" volts. Reward: intergration base is ^0.75 and IP boost volt gain",
+            unlocked() { return hasAchievement("goals", 93) },
+        },131: {
+            name: "I'm (somewhat) very strong",
+            done() { return player.d.points.gte(2498)&&player.b.value.gte(1e9)&&inChallenge('d',11)},
+            tooltip:()=>"reach 2498 D-power and "+format(1e9)+" b in the discharger. Reward: n(t) boost time speed.",
+            unlocked() { return hasAchievement("goals", 124) },
+        }
     },
     nodeStyle: { width: "50px", height: "50px", "min-width": "50px" },
     componentStyles: {
